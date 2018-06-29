@@ -2,9 +2,9 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$cmd = '/usr/bin/php /Users/freemanyam/Sites/sb/phpasync/examples/thread.php good 1';
-$cmd1 = '/usr/bin/php /Users/freemanyam/Sites/sb/phpasync/examples/thread.php good 5'; // error
-$cmd2 = '/usr/bin/php /Users/freemanyam/Sites/sb/phpasync/examples/thread.php error 5'; // error
+$cmd = '/usr/bin/php /Users/freemanyam/Sites/sb/phpasync/examples/thread.php good 5';
+$cmd1 = '/usr/bin/php /Users/freemanyam/Sites/sb/phpasync/examples/thread.php good 2';
+$cmd2 = '/usr/bin/php /Users/freemanyam/Sites/sb/phpasync/examples/thread.php error 1'; // error
 
 $commands = [$cmd, $cmd1, $cmd2];
 for($i=0; $i< 150; $i++) {
@@ -15,6 +15,8 @@ $adapter = new \Pasync\Adapter\RedisAdapter();
 $command = new \Pasync\Command\Command($adapter);
 
 $start = microtime(true);
+// Without ->done(), no wait for the results
+// $command->exec($commands);
 $command->exec($commands)->done(function ($res) {
     echo "Good :\n";
     var_dump($res);
@@ -22,7 +24,7 @@ $command->exec($commands)->done(function ($res) {
     function ($error) use($start) {
         echo "Error:\n";
         var_dump($error);
-        var_dump((microtime(true) - $start));
+        echo "Process time: " . (microtime(true) - $start) . "s\n";
     }
 );
 

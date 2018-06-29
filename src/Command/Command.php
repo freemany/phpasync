@@ -8,7 +8,7 @@ use Pasync\Adapter\AdapterInterface;
 class Command
 {
     protected $adapter;
-    protected $max = 5000;
+    protected $max = 50000;
     protected $ids;
     protected $cmdTpl = '%s %s > /dev/null 2>&1 &';
     protected $commands = [];
@@ -37,7 +37,6 @@ class Command
         foreach ($commands as $command) {
             $id = uniqid('command_thread_');
             $this->ids[] = $id;
-            $this->commands[$id] = $command;
             $this->run($id, $command);
         }
         return $this;
@@ -99,9 +98,14 @@ class Command
         return true;
     }
 
+    /**
+     * @param $id
+     * @param $command
+     */
     protected function run($id, $command): void
     {
         $cmd = sprintf($this->cmdTpl, $command, $id);
+        $this->commands[$id] = $cmd;
         shell_exec($cmd);
     }
 }
